@@ -46,76 +46,249 @@ def clean_text_for_speech(text: str) -> str:
     text = re.sub(r'\s{2,}', ' ', text)
     return text.strip()
 
-def narrar_accion_coloquial(tool_name: str, tool_action: str, tool_summary: str) -> str:
-    """Convierte la acción técnica del modelo en una frase hablada 100% coloquial y en español puro."""
-    raw = (tool_action or tool_summary or "").strip().strip('"\'')
-    raw_lower = raw.lower()
-
-    # Mapeos directos por contexto de acciones
-    if any(k in raw_lower for k in ["listing directory", "listar archivos", "list_dir", "list workspace"]):
-        return "Voy a revisar los archivos de la carpeta, Señor Luis."
-    elif any(k in raw_lower for k in ["reading file", "viewing file", "view_file", "consultando", "inspeccionando", "view "]):
-        return "Voy a echarle un vistazo a los archivos para ver los datos, Señor Luis."
-    elif any(k in raw_lower for k in ["running command", "ejecutando", "run_command", "checking running", "tasklist"]):
-        if "pip" in raw_lower or "install" in raw_lower:
-            return "Un momento, Señor Luis: voy a instalar la paquetería necesaria."
-        elif "inventario" in raw_lower:
-            return "Procesando el inventario y las compatibilidades, Señor Luis. Esto tomará unos segundos."
-        return "Ejecutando la tarea en terminal, Señor Luis."
-    elif any(k in raw_lower for k in ["editing file", "writing file", "write_to_file", "replace_file_content", "creando script", "actualizando", "modificando"]):
-        return "Haciendo unos ajustes en el código fuente, Señor Luis."
-    elif any(k in raw_lower for k in ["searching", "grep", "buscando"]):
-        return "Buscando la información en el sistema, Señor Luis."
-    elif any(k in raw_lower for k in ["manage_task", "kill", "detener"]):
-        return "Gestionando los procesos en segundo plano, Señor Luis."
-
-    # Conversión fluida de gerundios en español
-    gerundios = [
-        ("Inspeccionando", "echarle un vistazo a"),
-        ("Analizando", "analizar"),
-        ("Revisando", "revisar"),
-        ("Creando", "crear"),
-        ("Ejecutando", "ejecutar"),
-        ("Verificando", "verificar"),
-        ("Instalando", "instalar"),
-        ("Consultando", "consultar"),
-        ("Actualizando", "actualizar"),
-        ("Optimizando", "optimizar"),
-        ("Modificando", "modificar"),
-        ("Validando", "validar"),
-        ("Buscando", "buscar"),
-        ("Probando", "probar"),
-        ("Guardando", "guardar"),
-        ("Compilando", "compilar"),
-        ("Checking", "verificar"),
-        ("Listing", "revisar"),
-        ("Viewing", "consultar"),
-        ("Running", "ejecutar"),
-        ("Testing", "probar")
+def traducir_terminos_tecnicos(texto: str) -> str:
+    """Traduce términos y frases comunes en inglés al español técnico y natural."""
+    reemplazos = [
+        ("Allow checking git status", "¿Permitir verificar el estado del repositorio?"),
+        ("allow checking git status", "¿permitir verificar el estado del repositorio?"),
+        ("Allow inspecting Excel file", "¿Permitir inspeccionar el archivo de Excel?"),
+        ("allow inspecting Excel file", "¿permitir inspeccionar el archivo de Excel?"),
+        ("Allow inspecting", "¿Permitir inspeccionar"),
+        ("allow inspecting", "¿permitir inspeccionar"),
+        ("Allow checking", "¿Permitir verificar"),
+        ("allow checking", "¿permitir verificar"),
+        ("Allow running", "¿Permitir ejecutar"),
+        ("allow running", "¿permitir ejecutar"),
+        ("Allow ", "¿Permitir "),
+        ("allow ", "permitir "),
+        ("Checking git status", "Verificando el estado del repositorio"),
+        ("checking git status", "verificando el estado del repositorio"),
+        ("Git status", "Estado del repositorio Git"),
+        ("git status", "estado del repositorio Git"),
+        ("Inspecting Excel file", "Inspeccionando el archivo de Excel"),
+        ("inspecting Excel file", "inspeccionando el archivo de Excel"),
+        ("Inspecting Excel", "Inspeccionando el archivo de Excel"),
+        ("inspecting Excel", "inspeccionando el archivo de Excel"),
+        ("Excel inventory structure", "la estructura del inventario"),
+        ("Excel inventory data", "los datos del inventario en Excel"),
+        ("Excel columns", "las columnas del archivo Excel"),
+        ("Excel file", "el archivo de Excel"),
+        ("excel file", "el archivo de Excel"),
+        ("Listing directory contents", "Listando los archivos del directorio"),
+        ("listing directory contents", "listando los archivos del directorio"),
+        ("List directory contents", "Listar los archivos de la carpeta"),
+        ("list directory contents", "listar los archivos de la carpeta"),
+        ("Directory contents", "Contenido del directorio"),
+        ("directory contents", "contenido del directorio"),
+        ("Directory analysis", "Análisis del directorio"),
+        ("directory analysis", "análisis del directorio"),
+        ("workspace root directory", "el directorio principal del proyecto"),
+        ("workspace root", "la raíz del proyecto"),
+        ("parent directory contents", "los archivos del directorio superior"),
+        ("parent directory", "el directorio superior"),
+        ("Searching in workspace", "Buscando en los archivos del proyecto"),
+        ("searching in workspace", "buscando en los archivos del proyecto"),
+        ("Web search", "Búsqueda en la web"),
+        ("web search", "búsqueda en la web"),
+        ("File edit", "Modificación del archivo"),
+        ("file edit", "modificación del archivo"),
+        ("Command execution", "Ejecución de la instrucción en consola"),
+        ("command execution", "ejecución de instrucción en consola"),
+        ("Task status", "Estado de la tarea"),
+        ("task status", "estado de la tarea"),
+        ("Status check", "Revisión de estado"),
+        ("status check", "revisión de estado"),
+        ("completed with exit code 0", "completado con éxito"),
+        ("exited with code 0", "finalizado con éxito"),
+        ("user denied permission", "permiso denegado por el usuario"),
+        ("permission denied", "permiso no concedido"),
+        ("Inspecting", "Inspeccionando"),
+        ("inspecting", "inspeccionando"),
+        ("Checking", "Verificando"),
+        ("checking", "verificando"),
+        ("Viewing", "Revisando"),
+        ("viewing", "revisando"),
+        ("Reading", "Leyendo"),
+        ("reading", "leyendo"),
+        ("Running command", "Ejecutando la instrucción"),
+        ("running command", "ejecutando la instrucción"),
+        ("Running", "Ejecutando"),
+        ("running", "ejecutando"),
+        ("Listing", "Listando"),
+        ("listing", "listando"),
+        ("Searching", "Buscando"),
+        ("searching", "buscando"),
+        ("Editing", "Modificando"),
+        ("editing", "modificando"),
+        ("Updating", "Actualizando"),
+        ("updating", "actualizando"),
+        ("Writing", "Escribiendo"),
+        ("writing", "escribiendo"),
+        ("Opening", "Abriendo"),
+        ("opening", "abriendo"),
+        ("Navigating to", "Navegando hacia"),
+        ("navigating to", "navegando hacia"),
+        ("Navigating", "Navegando en"),
+        ("navigating", "navegando en"),
+        ("Processing", "Procesando"),
+        ("processing", "procesando"),
+        ("Styling", "Estilizando"),
+        ("styling", "estilizando"),
+        ("Analyzing", "Analizando"),
+        ("analyzing", "analizando"),
+        ("Cleaning", "Limpiando"),
+        ("cleaning", "limpiando"),
+        ("Converting", "Convirtiendo"),
+        ("converting", "convirtiendo"),
+        ("Testing", "Probando"),
+        ("testing", "probando"),
+        ("Executing", "Ejecutando"),
+        ("executing", "ejecutando"),
+        ("Creating", "Creando"),
+        ("creating", "creando"),
+        ("Scanning", "Escaneando"),
+        ("scanning", "escaneando"),
+        ("compatibility script", "el script de compatibilidad"),
+        ("processing logic", "la lógica de procesamiento"),
+        ("recent transcript items", "los eventos recientes de la sesión"),
+        ("transcript processing", "el procesamiento de la sesión"),
+        ("transcript parsing logic", "la lectura de eventos en tiempo real"),
+        ("GitHub repository in default browser", "el repositorio de GitHub en el navegador"),
+        ("GitHub repository", "el repositorio de GitHub"),
+        ("repository in browser", "el repositorio en el navegador"),
+        ("speech telemetry", "la telemetría de voz"),
+        ("sample row from inventory", "una fila de muestra del inventario"),
+        ("inventory data", "los datos del inventario"),
+        ("auto parts inventory", "el inventario de refacciones"),
+        ("auto parts", "las refacciones"),
+        ("narration function", "la función de voz en vivo"),
+        ("batch file", "el archivo por lotes"),
+        ("file contents", "el contenido del archivo"),
+        ("in default browser", "en el navegador"),
+        ("inspection", "inspección"),
+        ("structure", "estructura"),
+        ("columns", "columnas"),
     ]
+    res = texto
+    for eng, esp in reemplazos:
+        res = re.sub(re.escape(eng), esp, res)
+    return res
 
-    col = raw
-    matched_gerund = False
-    for g, inf in gerundios:
-        if col.lower().startswith(g.lower()):
-            col = inf + col[len(g):]
-            matched_gerund = True
+def convertir_a_confirmacion(texto: str) -> str:
+    """Convierte una acción en una solicitud formal y clara de confirmación para el Señor Luis cuando el IDE pide permiso."""
+    if not texto:
+        return "Señor Luis, ¿me confirma por favor la ejecución de este comando?"
+    t = traducir_terminos_tecnicos(texto).strip().strip('"\'?.')
+    t = re.sub(r'^(allow\s+|permitir\s+|¿permitir\s+)', '', t, flags=re.IGNORECASE).strip()
+    
+    gerundios_a_infinitivo = [
+        (r'^generando\b', 'generar'),
+        (r'^ejecutando\b', 'ejecutar'),
+        (r'^verificando\b', 'verificar'),
+        (r'^analizando\b', 'analizar'),
+        (r'^comprobando\b', 'comprobar'),
+        (r'^instalando\b', 'instalar'),
+        (r'^abriendo\b', 'abrir'),
+        (r'^buscando\b', 'buscar'),
+        (r'^limpiando\b', 'limpiar'),
+        (r'^creando\b', 'crear'),
+        (r'^modificando\b', 'modificar'),
+        (r'^editando\b', 'editar'),
+        (r'^actualizando\b', 'actualizar'),
+        (r'^estilizando\b', 'estilizar'),
+        (r'^inspeccionando\b', 'inspeccionar'),
+        (r'^revisando\b', 'revisar'),
+        (r'^leyendo\b', 'leer'),
+        (r'^listando\b', 'listar'),
+        (r'^probando\b', 'probar'),
+        (r'^guardando\b', 'guardar'),
+    ]
+    t_lower = t[0].lower() + t[1:] if len(t) > 1 else t.lower()
+    for pattern, inf in gerundios_a_infinitivo:
+        if re.search(pattern, t_lower, flags=re.IGNORECASE):
+            t_lower = re.sub(pattern, inf, t_lower, flags=re.IGNORECASE)
             break
+    return f"Señor Luis, ¿me confirma por favor para {t_lower}?"
 
-    # Si contenía palabras en inglés o no coincidió con gerundio conocido, recurrir a frases elegantes en español
-    if not matched_gerund or any(en in col.lower() for en in ["process", "file", "workspace", "directory", "script", "running", "status"]):
-        if tool_name == "run_command":
-            return "Ejecutando el comando en el sistema, Señor Luis."
-        elif tool_name in ["view_file", "list_dir"]:
-            return "Revisando los componentes del proyecto, Señor Luis."
-        elif tool_name in ["replace_file_content", "write_to_file", "multi_replace_file_content"]:
-            return "Actualizando el código fuente, Señor Luis."
-        return "Trabajando en la tarea en este momento, Señor Luis."
+def narrar_accion_coloquial(tool_name: str, tool_action: str, tool_summary: str, tool_args: dict = None) -> str:
+    """Convierte la acción técnica del modelo y sus argumentos en una frase hablada 100% natural, específica y en español."""
+    args = tool_args or {}
+    act = (tool_action or "").strip().strip('"\'')
+    sum_txt = (tool_summary or "").strip().strip('"\'')
+    raw_desc = args.get('Description', '').strip()
 
-    if col and len(col) > 4:
-        return f"Voy a {col}, Señor Luis."
+    # Extraer nombre del archivo si aplica
+    target_path = args.get('TargetFile') or args.get('AbsolutePath') or ''
+    target_filename = os.path.basename(target_path) if target_path else ''
 
-    return "Trabajando en ello en este momento, Señor Luis."
+    # 1. Petición de confirmación en comandos de consola (El IDE muestra 'Allow <accion>?')
+    if tool_name == "run_command":
+        if act:
+            return convertir_a_confirmacion(act)
+        elif sum_txt:
+            return convertir_a_confirmacion(sum_txt)
+        cmd = args.get('CommandLine', '').strip()
+        if "pip" in cmd.lower() or "install" in cmd.lower():
+            return "Señor Luis, ¿me confirma por favor para instalar la paquetería necesaria?"
+        elif "git" in cmd.lower():
+            return "Señor Luis, ¿me confirma por favor para revisar el repositorio con Git?"
+        return "Señor Luis, ¿me confirma por favor la ejecución de este comando en terminal?"
+
+    # 2. Consultas interactivas al usuario
+    if tool_name == "ask_question":
+        return "Señor Luis, le he presentado una consulta en pantalla para conocer sus preferencias."
+
+    # 3. Edición y guardado de archivos
+    if tool_name in ["replace_file_content", "write_to_file", "multi_replace_file_content"]:
+        if raw_desc and len(raw_desc) > 8:
+            desc_limpia = raw_desc.rstrip('.')
+            return f"{desc_limpia}, Señor Luis."
+        elif target_filename:
+            return f"Actualizando el archivo {target_filename}, Señor Luis."
+        return "Aplicando cambios en el código, Señor Luis."
+
+    # 4. Lectura / consulta de archivos
+    if tool_name == "view_file":
+        if act:
+            act_trad = traducir_terminos_tecnicos(act)
+            return f"{act_trad}, Señor Luis."
+        elif target_filename:
+            return f"Revisando el archivo {target_filename}, Señor Luis."
+        elif sum_txt:
+            base = traducir_terminos_tecnicos(sum_txt)
+            return f"{base}, Señor Luis."
+        return "Revisando el archivo correspondiente, Señor Luis."
+
+    # 4. Navegador web
+    if tool_name == "browser_subagent":
+        task_sum = args.get('TaskSummary', '') or sum_txt
+        if task_sum:
+            task_trad = traducir_terminos_tecnicos(task_sum)
+            return f"{task_trad}, Señor Luis."
+        return "Navegando en el navegador web, Señor Luis."
+
+    # 5. Búsqueda de código
+    if tool_name in ["grep_search", "search_web"]:
+        q = args.get('Query') or args.get('query') or ''
+        if q:
+            return f"Buscando coincidencias de '{q}', Señor Luis."
+        return "Buscando referencias en el proyecto, Señor Luis."
+
+    # 6. Listado de carpetas
+    if tool_name == "list_dir":
+        dp = args.get('DirectoryPath', '')
+        dir_name = os.path.basename(dp) if dp else "el proyecto"
+        return f"Listando los archivos de {dir_name}, Señor Luis."
+
+    # 7. Fallback dinámico con traducción
+    if act:
+        frase = traducir_terminos_tecnicos(act)
+        return f"{frase}, Señor Luis."
+    elif sum_txt:
+        frase = traducir_terminos_tecnicos(sum_txt)
+        return f"{frase}, Señor Luis."
+
+    return "Trabajando en la tarea en este momento, Señor Luis."
 
 async def generate_speech(text: str, output_path: str):
     communicate = edge_tts.Communicate(text, VOICE)
@@ -193,7 +366,15 @@ class MusicManager:
 def detect_chat_commands(user_text: str, music: MusicManager):
     """Detecta comandos de música escritos por el señor Luis en el chat."""
     text = user_text.lower()
-    if "100%" in text or "al 100" in text or "cien por ciento" in text:
+    if any(k in text for k in ["subele", "sube la musica", "subele a la musica", "subir volumen", "mas volumen", "sube el volumen", "aumenta el volumen"]):
+        new_vol = min(1.0, music.target_volume + 0.30 if music.target_volume < 0.9 else 1.0)
+        music.set_volume(new_vol)
+        print(f"\n🔊 [JARVIS]: Volumen aumentado al {int(music.target_volume * 100)}% por comando de chat.")
+    elif any(k in text for k in ["bajale", "baja la musica", "bajale a la musica", "bajar volumen", "menos volumen", "baja el volumen", "disminuye el volumen"]):
+        new_vol = max(0.10, music.target_volume - 0.25)
+        music.set_volume(new_vol)
+        print(f"\n🔉 [JARVIS]: Volumen disminuido al {int(music.target_volume * 100)}% por comando de chat.")
+    elif "100%" in text or "al 100" in text or "cien por ciento" in text or "maximo" in text:
         music.set_volume(1.0)
         print("\n🎚️ [JARVIS]: Volumen de música ajustado al 100% por comando de chat.")
     elif "50%" in text or "al 50" in text or "cincuenta por ciento" in text:
@@ -354,13 +535,13 @@ def main():
                             # 2. Narrar acciones del modelo en tiempo real mientras trabaja
                             elif item_type == 'PLANNER_RESPONSE' and item.get('tool_calls') and step_idx not in processed_steps:
                                 processed_steps.add(step_idx)
-                                if not is_muted[0] and (time.time() - last_tool_narration_time > 2.0):
+                                if not is_muted[0] and (time.time() - last_tool_narration_time > 1.8):
                                     tc = item['tool_calls'][0]
                                     t_name = tc.get('name', '')
                                     t_args = tc.get('args', {})
                                     t_act = t_args.get('toolAction', '')
                                     t_sum = t_args.get('toolSummary', '')
-                                    frase = narrar_accion_coloquial(t_name, t_act, t_sum)
+                                    frase = narrar_accion_coloquial(t_name, t_act, t_sum, t_args)
                                     if frase:
                                         print(f"\n⚡ [JARVIS Acción en vivo]: {frase}")
                                         last_tool_narration_time = time.time()

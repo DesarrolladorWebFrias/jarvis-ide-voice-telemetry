@@ -20,3 +20,14 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+
+# Datos comerciales y archivos locales confidenciales
+*.xlsx
+*.xls
+*.csv
+*inventario*
+inventario_*
+estilizar_inventario.py
+generar_dashboard_web.py
+miniatura_*.jpg
+
