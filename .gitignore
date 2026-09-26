@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Temporal files
+*.tmp
+*.mp3
+*.log
+!jarvis_music/*.mp3
+!jarvis_music/*.wav
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
