@@ -47,24 +47,27 @@ def clean_text_for_speech(text: str) -> str:
     return text.strip()
 
 def narrar_accion_coloquial(tool_name: str, tool_action: str, tool_summary: str) -> str:
-    """Convierte la acción técnica del modelo en una frase hablada 100% coloquial y fluida."""
+    """Convierte la acción técnica del modelo en una frase hablada 100% coloquial y en español puro."""
     raw = (tool_action or tool_summary or "").strip().strip('"\'')
     raw_lower = raw.lower()
 
-    if any(k in raw_lower for k in ["listing directory", "listar archivos", "list_dir"]):
+    # Mapeos directos por contexto de acciones
+    if any(k in raw_lower for k in ["listing directory", "listar archivos", "list_dir", "list workspace"]):
         return "Voy a revisar los archivos de la carpeta, Señor Luis."
-    elif any(k in raw_lower for k in ["reading file", "viewing file", "view_file", "consultando", "inspeccionando"]):
+    elif any(k in raw_lower for k in ["reading file", "viewing file", "view_file", "consultando", "inspeccionando", "view "]):
         return "Voy a echarle un vistazo a los archivos para ver los datos, Señor Luis."
-    elif any(k in raw_lower for k in ["running command", "ejecutando", "run_command"]):
+    elif any(k in raw_lower for k in ["running command", "ejecutando", "run_command", "checking running", "tasklist"]):
         if "pip" in raw_lower or "install" in raw_lower:
             return "Un momento, Señor Luis: voy a instalar la paquetería necesaria."
         elif "inventario" in raw_lower:
             return "Procesando el inventario y las compatibilidades, Señor Luis. Esto tomará unos segundos."
-        return "Ejecutando la tarea en segundo plano, Señor Luis."
-    elif any(k in raw_lower for k in ["editing file", "writing file", "write_to_file", "replace_file_content", "creando script", "actualizando"]):
+        return "Ejecutando la tarea en terminal, Señor Luis."
+    elif any(k in raw_lower for k in ["editing file", "writing file", "write_to_file", "replace_file_content", "creando script", "actualizando", "modificando"]):
         return "Haciendo unos ajustes en el código fuente, Señor Luis."
     elif any(k in raw_lower for k in ["searching", "grep", "buscando"]):
         return "Buscando la información en el sistema, Señor Luis."
+    elif any(k in raw_lower for k in ["manage_task", "kill", "detener"]):
+        return "Gestionando los procesos en segundo plano, Señor Luis."
 
     # Conversión fluida de gerundios en español
     gerundios = [
@@ -83,14 +86,31 @@ def narrar_accion_coloquial(tool_name: str, tool_action: str, tool_summary: str)
         ("Buscando", "buscar"),
         ("Probando", "probar"),
         ("Guardando", "guardar"),
-        ("Compilando", "compilar")
+        ("Compilando", "compilar"),
+        ("Checking", "verificar"),
+        ("Listing", "revisar"),
+        ("Viewing", "consultar"),
+        ("Running", "ejecutar"),
+        ("Testing", "probar")
     ]
 
     col = raw
+    matched_gerund = False
     for g, inf in gerundios:
-        if col.startswith(g):
+        if col.lower().startswith(g.lower()):
             col = inf + col[len(g):]
+            matched_gerund = True
             break
+
+    # Si contenía palabras en inglés o no coincidió con gerundio conocido, recurrir a frases elegantes en español
+    if not matched_gerund or any(en in col.lower() for en in ["process", "file", "workspace", "directory", "script", "running", "status"]):
+        if tool_name == "run_command":
+            return "Ejecutando el comando en el sistema, Señor Luis."
+        elif tool_name in ["view_file", "list_dir"]:
+            return "Revisando los componentes del proyecto, Señor Luis."
+        elif tool_name in ["replace_file_content", "write_to_file", "multi_replace_file_content"]:
+            return "Actualizando el código fuente, Señor Luis."
+        return "Trabajando en la tarea en este momento, Señor Luis."
 
     if col and len(col) > 4:
         return f"Voy a {col}, Señor Luis."
