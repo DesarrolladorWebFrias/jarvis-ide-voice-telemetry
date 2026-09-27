@@ -12,13 +12,14 @@ Developed & Engineered by **[Luis Andrés López Frías](https://github.com/Desa
 
 ---
 
-## ⚡ The Problem with Modern AI IDEs (Cursor, Copilot, Windsurf)
+## ⚡ The Problem: Dead Silence & Operative Blindness ("Ceguera Operativa")
 
-Modern agentic IDEs are revolutionary, but they have a glaring UX flaw: **Dead Silence**.
-When an AI agent executes terminal commands, installs dependencies, refactors thousands of rows, or runs unit tests, the developer is left staring at a frozen spinning wheel.
+Modern agentic IDEs are revolutionary, but they introduce two critical pain points for software engineers:
+1. **The Black-Box execution problem:** Autonomous agents have direct access to terminals, filesystems, and Git. When an agent enters heavy inference, the developer is left staring at a spinning wheel, blind to whether the AI is reading, overwriting critical files, or stuck in a loop.
+2. **Cognitive disconnect & English technical jargon:** Raw console logs and generic status messages (`"executing tool_call..."`) don't explain *why* the action matters to the project or what business logic is being touched.
 
 **JARVIS solves this fundamentally:**
-Instead of waiting for the final text output, JARVIS intercepts the agent's `tool_calls` stream in **real time**, translates the pending actions into natural colloquial speech, and narrates what the model is doing **before and during execution**, with automatic studio-grade music ducking.
+Instead of passive waiting, JARVIS intercepts the agent's `tool_calls` stream in **real time**, resolves the contextual purpose of the action using low-latency semantic evaluation, and narrates what the model is doing **in natural, localized Spanish before and during execution**, accompanied by automatic studio-grade music ducking.
 
 ---
 
@@ -26,9 +27,10 @@ Instead of waiting for the final text output, JARVIS intercepts the agent's `too
 
 * 🎙️ **Zero-Silence Real-Time Telemetry:** Narrates terminal commands, file inspections, and code generation steps as they are triggered.
 * 🎧 **Dynamic Audio Ducking:** Background focus music automatically attenuates (*50% → 10%*) when JARVIS speaks, and smoothly swells back up when processing begins.
-* 🧠 **Colloquial Action Translation:** Automatically converts dry technical tool calls (`"Inspeccionando inventario"`, `"Executing pip install"`) into natural, elegant assistant dialogue (*"Voy a revisar los archivos para ver los datos, Señor Luis..."*).
+* 🧠 **Context-Aware Semantic Observability (Micro-LLM Inference):** Eliminates developer operative blindness ("ceguera operativa"). Instead of reciting dry technical commands or obscure English terms, an ultra-low-latency micro-evaluator interprets the *business/engineering purpose* within the project and explains in concise, natural Mexican Spanish what the AI agent is achieving.
 * 💬 **Dual-Channel Control:** Supports both keyboard shortcuts (`[P]` pause, `[T]` track switch, `[M]` mute, `[1]` volume 100%) and natural chat commands directly within the IDE (`"Jarvis, pausa"`, `"cambia a lofi"`, `"sube al 100%"`).
 * 🎵 **Built-In Focus Soundscapes:** Bundled with Synthwave Lab, Lo-Fi Rhodes, Cyber Focus, and Stark Ambient soundtracks.
+* 🛡️ **Hybrid Fault-Tolerant Architecture:** Sub-300ms parallel inference with instant deterministic heuristic fallback, ensuring zero latency interruption.
 
 ---
 
@@ -49,12 +51,13 @@ Instead of waiting for the final text output, JARVIS intercepts the agent's `too
  ║                     JARVIS ENGINE (jarvis_voice.py)                     ║
  ║                                                                         ║
  ║  ┌─────────────────────────┐           ┌─────────────────────────────┐  ║
- ║  │ Natural Action Parsing  │           │ Dual-Channel Pygame Mixer   │  ║
- ║  │ • Tool Action Converter │           │ • Channel 0: Neural Voice   │  ║
- ║  │ • Chat Commands Watcher │           │ • Channel 1: Focus Music    │  ║
- ║  └───────────┬─────────────┘           └──────────────┬──────────────┘  ║
- ║              │                                        ▲                 ║
- ║              ▼                                        │ (Audio Ducking) ║
+ ║  │ Contextual Intent Engine│           │ Dual-Channel Pygame Mixer   │  ║
+ ║  │ • Micro-LLM Evaluator   │           │ • Channel 0: Neural Voice   │  ║
+ ║  │ • Heuristic Fallback    │           │ • Channel 1: Focus Music    │  ║
+ ║  │ • Chat Commands Watcher │           └──────────────┬──────────────┘  ║
+ ║  └───────────┬─────────────┘                          ▲                 ║
+ ║              │                                        │ (Audio Ducking) ║
+ ║              ▼                                        │                 ║
  ║  ┌─────────────────────────┐                          │                 ║
  ║  │ Neural Speech Synthesis ├──────────────────────────┘                 ║
  ║  │ (Edge-TTS High Fidelity)│                                            ║
