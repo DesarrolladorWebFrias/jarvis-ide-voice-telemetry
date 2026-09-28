@@ -440,8 +440,22 @@ def detect_chat_commands(user_text: str, music: MusicManager):
         nxt = music.switch_next()
         print(f"\n🎶 [JARVIS]: Pista alternada automáticamente a -> {nxt.upper()}")
 
+def reinit_audio(music: MusicManager):
+    """Reinicializa el subsistema de audio si los auriculares Bluetooth se desconectan o reconectan."""
+    try:
+        pygame.mixer.quit()
+        time.sleep(0.3)
+        pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
+        music.channel = pygame.mixer.Channel(1)
+        music.load_track(music.current_track_name)
+        if music.is_playing and not music.is_paused:
+            music.start()
+        print("🔊 [JARVIS]: Dispositivo de audio restablecido automáticamente.")
+    except Exception as e:
+        print(f"⚠️ [JARVIS]: Esperando dispositivo de audio disponible: {e}")
+
 def play_voice(voice_file: str, is_muted_ref, music: MusicManager):
-    """Habla y gestiona el ducking de la música en tiempo real."""
+    """Habla y gestiona el ducking de la música en tiempo real con tolerancia a desconexión Bluetooth."""
     try:
         music.duck()
         pygame.mixer.music.load(voice_file)
@@ -483,8 +497,9 @@ def play_voice(voice_file: str, is_muted_ref, music: MusicManager):
         pygame.mixer.music.unload()
         music.unduck()
     except Exception as e:
-        print(f"[Error en audio]: {e}")
+        print(f"\n⚠️ [JARVIS]: Evento en dispositivo de audio detectado ({e}). Restableciendo...")
         music.unduck()
+        reinit_audio(music)
 
 def main():
     os.system('cls' if os.name == 'nt' else 'clear')
