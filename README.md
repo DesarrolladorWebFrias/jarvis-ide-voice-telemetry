@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Neural Voice](https://img.shields.io/badge/TTS-Neural%20Edge-brightgreen)](https://github.com/rany2/edge-tts)
 [![Audio Engine](https://img.shields.io/badge/Mixer-Pygame%20Audio%20Channels-red)](https://www.pygame.org/)
-[![YouTube Demo](https://img.shields.io/badge/YouTube-Ver%20Demo%20en%20Vivo-red?logo=youtube)](https://www.youtube.com/watch?v=bT_DFxT_sD0)
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Watch%20Live%20Demo-red?logo=youtube)](https://www.youtube.com/watch?v=bT_DFxT_sD0)
 [![GitHub Stars](https://img.shields.io/github/stars/DesarrolladorWebFrias/jarvis-ide-voice-telemetry?style=social)](https://github.com/DesarrolladorWebFrias/jarvis-ide-voice-telemetry/stargazers)
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-success)]()
 
@@ -14,24 +14,22 @@ Developed & Engineered by **[Luis Andrés López Frías](https://github.com/Desa
 
 ---
 
-## 📺 Demostración en Video (YouTube)
+## 📺 Live Video Demo (YouTube)
 
-Mira a **JARVIS** trabajando en vivo con **Google Antigravity**, narrando las acciones del agente de IA y aplicando **Dynamic Audio Ducking** en tiempo real:
+Watch **JARVIS** live in action interacting with **Google Antigravity**, narrating AI agent actions with **Zero-Silence Real-Time Telemetry** and dynamic audio ducking:
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=bT_DFxT_sD0" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.youtube.com/vi/bT_DFxT_sD0/maxresdefault.jpg" alt="Ver Demostración en YouTube - Le programé la voz de mi asistente a Antigravity de Google" width="85%" style="border-radius: 10px; box-shadow: 0px 4px 15px rgba(0,0,0,0.3);" />
+  <a href="https://www.youtube.com/watch?v=bT_DFxT_sD0">
+    <img src="https://img.youtube.com/vi/bT_DFxT_sD0/maxresdefault.jpg" alt="Live Demo on YouTube - Adding Voice Telemetry to Google Antigravity" width="85%" style="border-radius: 10px; box-shadow: 0px 4px 15px rgba(0,0,0,0.3);" />
   </a>
 </p>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=bT_DFxT_sD0" target="_blank" rel="noopener noreferrer">
-    ▶️ <b>Haz clic aquí para ver el video completo en YouTube</b> <i>(se abre en una pestaña nueva)</i>
-  </a>
+  <a href="https://www.youtube.com/watch?v=bT_DFxT_sD0">▶️ <b>Click here to watch the full demo on YouTube</b> (2:40 min) — <i>(Ctrl + Click to open in a new tab)</i></a>
 </p>
 
-> ⭐ **¿Te gustó el proyecto o te resulta útil?**  
-> ¡Apóyanos dejando una **estrella (Star ⭐)** en la esquina superior derecha del repositorio! Ayuda enormemente a que más desarrolladores descubran esta herramienta y motiva a seguir expandiendo el motor de telemetría de voz.
+> ⭐ **Enjoying the project or finding it useful?**  
+> Please consider giving it a **Star (⭐)** on the top right corner of this repository! It helps more developers discover this tool and fuels further open-source voice telemetry innovations.
 
 ---
 
