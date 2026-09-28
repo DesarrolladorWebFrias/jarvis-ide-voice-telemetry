@@ -19,13 +19,15 @@ Developed & Engineered by **[Luis Andrés López Frías](https://github.com/Desa
 Mira a **JARVIS** trabajando en vivo con **Google Antigravity**, narrando las acciones del agente de IA y aplicando **Dynamic Audio Ducking** en tiempo real:
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=bT_DFxT_sD0" target="_blank">
-    <img src="miniatura_youtube.jpg" alt="Ver Demostración en YouTube - Le programé la voz de mi asistente a Antigravity de Google" width="85%" style="border-radius: 10px; box-shadow: 0px 4px 15px rgba(0,0,0,0.3);" />
+  <a href="https://www.youtube.com/watch?v=bT_DFxT_sD0" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.youtube.com/vi/bT_DFxT_sD0/maxresdefault.jpg" alt="Ver Demostración en YouTube - Le programé la voz de mi asistente a Antigravity de Google" width="85%" style="border-radius: 10px; box-shadow: 0px 4px 15px rgba(0,0,0,0.3);" />
   </a>
 </p>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=bT_DFxT_sD0">▶️ <b>Haz clic aquí para ver el video completo en YouTube</b> (2:40 min)</a>
+  <a href="https://www.youtube.com/watch?v=bT_DFxT_sD0" target="_blank" rel="noopener noreferrer">
+    ▶️ <b>Haz clic aquí para ver el video completo en YouTube</b> <i>(se abre en una pestaña nueva)</i>
+  </a>
 </p>
 
 > ⭐ **¿Te gustó el proyecto o te resulta útil?**  
