@@ -4,11 +4,32 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Neural Voice](https://img.shields.io/badge/TTS-Neural%20Edge-brightgreen)](https://github.com/rany2/edge-tts)
 [![Audio Engine](https://img.shields.io/badge/Mixer-Pygame%20Audio%20Channels-red)](https://www.pygame.org/)
+[![YouTube Demo](https://img.shields.io/badge/YouTube-Ver%20Demo%20en%20Vivo-red?logo=youtube)](https://www.youtube.com/watch?v=bT_DFxT_sD0)
+[![GitHub Stars](https://img.shields.io/github/stars/DesarrolladorWebFrias/jarvis-ide-voice-telemetry?style=social)](https://github.com/DesarrolladorWebFrias/jarvis-ide-voice-telemetry/stargazers)
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-success)]()
 
 > **"Why wait in silence while your AI Agent executes heavy commands? Turn your coding workspace into Tony Stark's actual lab."**
 
 Developed & Engineered by **[Luis Andrés López Frías](https://github.com/DesarrolladorWebFrias)**.
+
+---
+
+## 📺 Demostración en Video (YouTube)
+
+Mira a **JARVIS** trabajando en vivo con **Google Antigravity**, narrando las acciones del agente de IA y aplicando **Dynamic Audio Ducking** en tiempo real:
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=bT_DFxT_sD0" target="_blank">
+    <img src="miniatura_youtube.jpg" alt="Ver Demostración en YouTube - Le programé la voz de mi asistente a Antigravity de Google" width="85%" style="border-radius: 10px; box-shadow: 0px 4px 15px rgba(0,0,0,0.3);" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=bT_DFxT_sD0">▶️ <b>Haz clic aquí para ver el video completo en YouTube</b> (2:40 min)</a>
+</p>
+
+> ⭐ **¿Te gustó el proyecto o te resulta útil?**  
+> ¡Apóyanos dejando una **estrella (Star ⭐)** en la esquina superior derecha del repositorio! Ayuda enormemente a que más desarrolladores descubran esta herramienta y motiva a seguir expandiendo el motor de telemetría de voz.
 
 ---
 
