@@ -28,10 +28,17 @@ TRACKS = {
 }
 
 def clean_text_for_speech(text: str) -> str:
-    """Limpia markdown, código y caracteres especiales para que suene fluido y natural."""
+    """Limpia markdown, código, URLs y caracteres especiales para que suene fluido y natural en español."""
     if not text:
         return ""
+    # Omitir bloques de código grandes
     text = re.sub(r'```[\s\S]*?```', ' [Código omitido] ', text)
+    # Reemplazar URLs completas por mención amigable
+    text = re.sub(r'https?://\S+', ' el enlace web ', text)
+    # Extraer sólo el nombre de archivo en rutas largas de Windows o Linux
+    text = re.sub(r'[A-Za-z]:\\[^\s]+?\\([^\s\\]+\.[a-zA-Z0-9]+)', r'\1', text)
+    text = re.sub(r'file:///[^\s]+/([^\s/]+\.[a-zA-Z0-9]+)', r'\1', text)
+    # Limpiar formato markdown inline
     text = re.sub(r'`([^`]+)`', r'\1', text)
     text = re.sub(r'\|[^\n]+\|', '', text)
     text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
@@ -47,131 +54,122 @@ def clean_text_for_speech(text: str) -> str:
     return text.strip()
 
 def traducir_terminos_tecnicos(texto: str) -> str:
-    """Traduce términos y frases comunes en inglés al español técnico y natural."""
+    """Traduce términos y frases en inglés generados por el IDE a un español coloquial y natural."""
+    if not texto:
+        return ""
+
     reemplazos = [
-        ("Allow checking git status", "¿Permitir verificar el estado del repositorio?"),
-        ("allow checking git status", "¿permitir verificar el estado del repositorio?"),
-        ("Allow inspecting Excel file", "¿Permitir inspeccionar el archivo de Excel?"),
-        ("allow inspecting Excel file", "¿permitir inspeccionar el archivo de Excel?"),
-        ("Allow inspecting", "¿Permitir inspeccionar"),
-        ("allow inspecting", "¿permitir inspeccionar"),
-        ("Allow checking", "¿Permitir verificar"),
-        ("allow checking", "¿permitir verificar"),
-        ("Allow running", "¿Permitir ejecutar"),
-        ("allow running", "¿permitir ejecutar"),
-        ("Allow ", "¿Permitir "),
-        ("allow ", "permitir "),
-        ("Checking git status", "Verificando el estado del repositorio"),
-        ("checking git status", "verificando el estado del repositorio"),
-        ("Git status", "Estado del repositorio Git"),
-        ("git status", "estado del repositorio Git"),
-        ("Inspecting Excel file", "Inspeccionando el archivo de Excel"),
-        ("inspecting Excel file", "inspeccionando el archivo de Excel"),
-        ("Inspecting Excel", "Inspeccionando el archivo de Excel"),
-        ("inspecting Excel", "inspeccionando el archivo de Excel"),
-        ("Excel inventory structure", "la estructura del inventario"),
-        ("Excel inventory data", "los datos del inventario en Excel"),
-        ("Excel columns", "las columnas del archivo Excel"),
-        ("Excel file", "el archivo de Excel"),
-        ("excel file", "el archivo de Excel"),
-        ("Listing directory contents", "Listando los archivos del directorio"),
-        ("listing directory contents", "listando los archivos del directorio"),
-        ("List directory contents", "Listar los archivos de la carpeta"),
-        ("list directory contents", "listar los archivos de la carpeta"),
-        ("Directory contents", "Contenido del directorio"),
-        ("directory contents", "contenido del directorio"),
-        ("Directory analysis", "Análisis del directorio"),
-        ("directory analysis", "análisis del directorio"),
-        ("workspace root directory", "el directorio principal del proyecto"),
-        ("workspace root", "la raíz del proyecto"),
-        ("parent directory contents", "los archivos del directorio superior"),
-        ("parent directory", "el directorio superior"),
-        ("Searching in workspace", "Buscando en los archivos del proyecto"),
-        ("searching in workspace", "buscando en los archivos del proyecto"),
-        ("Web search", "Búsqueda en la web"),
-        ("web search", "búsqueda en la web"),
-        ("File edit", "Modificación del archivo"),
-        ("file edit", "modificación del archivo"),
-        ("Command execution", "Ejecución de la instrucción en consola"),
-        ("command execution", "ejecución de instrucción en consola"),
-        ("Task status", "Estado de la tarea"),
-        ("task status", "estado de la tarea"),
-        ("Status check", "Revisión de estado"),
-        ("status check", "revisión de estado"),
-        ("completed with exit code 0", "completado con éxito"),
-        ("exited with code 0", "finalizado con éxito"),
-        ("user denied permission", "permiso denegado por el usuario"),
-        ("permission denied", "permiso no concedido"),
-        ("Inspecting", "Inspeccionando"),
-        ("inspecting", "inspeccionando"),
-        ("Checking", "Verificando"),
-        ("checking", "verificando"),
-        ("Viewing", "Revisando"),
-        ("viewing", "revisando"),
-        ("Reading", "Leyendo"),
-        ("reading", "leyendo"),
-        ("Running command", "Ejecutando la instrucción"),
-        ("running command", "ejecutando la instrucción"),
-        ("Running", "Ejecutando"),
-        ("running", "ejecutando"),
-        ("Listing", "Listando"),
-        ("listing", "listando"),
-        ("Searching", "Buscando"),
-        ("searching", "buscando"),
-        ("Editing", "Modificando"),
-        ("editing", "modificando"),
-        ("Updating", "Actualizando"),
-        ("updating", "actualizando"),
-        ("Writing", "Escribiendo"),
-        ("writing", "escribiendo"),
-        ("Opening", "Abriendo"),
-        ("opening", "abriendo"),
-        ("Navigating to", "Navegando hacia"),
-        ("navigating to", "navegando hacia"),
-        ("Navigating", "Navegando en"),
-        ("navigating", "navegando en"),
-        ("Processing", "Procesando"),
-        ("processing", "procesando"),
-        ("Styling", "Estilizando"),
-        ("styling", "estilizando"),
-        ("Analyzing", "Analizando"),
-        ("analyzing", "analizando"),
-        ("Cleaning", "Limpiando"),
-        ("cleaning", "limpiando"),
-        ("Converting", "Convirtiendo"),
-        ("converting", "convirtiendo"),
-        ("Testing", "Probando"),
-        ("testing", "probando"),
-        ("Executing", "Ejecutando"),
-        ("executing", "ejecutando"),
-        ("Creating", "Creando"),
-        ("creating", "creando"),
-        ("Scanning", "Escaneando"),
-        ("scanning", "escaneando"),
-        ("compatibility script", "el script de compatibilidad"),
-        ("processing logic", "la lógica de procesamiento"),
-        ("recent transcript items", "los eventos recientes de la sesión"),
-        ("transcript processing", "el procesamiento de la sesión"),
-        ("transcript parsing logic", "la lectura de eventos en tiempo real"),
-        ("GitHub repository in default browser", "el repositorio de GitHub en el navegador"),
-        ("GitHub repository", "el repositorio de GitHub"),
-        ("repository in browser", "el repositorio en el navegador"),
-        ("speech telemetry", "la telemetría de voz"),
-        ("sample row from inventory", "una fila de muestra del inventario"),
-        ("inventory data", "los datos del inventario"),
-        ("auto parts inventory", "el inventario de refacciones"),
-        ("auto parts", "las refacciones"),
-        ("narration function", "la función de voz en vivo"),
-        ("batch file", "el archivo por lotes"),
-        ("file contents", "el contenido del archivo"),
-        ("in default browser", "en el navegador"),
-        ("inspection", "inspección"),
-        ("structure", "estructura"),
-        ("columns", "columnas"),
+        # Frases completas de confirmación
+        (r"\bAllow checking git status\b", "¿Permitir verificar el estado del repositorio?"),
+        (r"\bAllow inspecting Excel file\b", "¿Permitir inspeccionar el archivo de Excel?"),
+        (r"\bAllow inspecting\b", "¿Permitir inspeccionar"),
+        (r"\bAllow checking\b", "¿Permitir verificar"),
+        (r"\bAllow running\b", "¿Permitir ejecutar"),
+        (r"\bAllow\b", "¿Permitir"),
+
+        # Acciones compuestas frecuentes de Antigravity
+        (r"\bViewing lines (\d+) to (\d+) of (.+)", r"Leyendo las líneas \1 a \2 de \3"),
+        (r"\bViewing lines (\d+) to (\d+)", r"Leyendo las líneas \1 a \2"),
+        (r"\bViewing lines\b", "Leyendo las líneas"),
+        (r"\bViewing file\b", "Leyendo el archivo"),
+        (r"\bReading file\b", "Leyendo el archivo"),
+        (r"\bEditing file\b", "Modificando el archivo"),
+        (r"\bWriting file\b", "Guardando el archivo"),
+        (r"\bRunning command\b", "Ejecutando la instrucción"),
+        (r"\bSearching the web\b", "Buscando en la web"),
+        (r"\bSearching directory\b", "Buscando en la carpeta"),
+        (r"\bSearching in workspace\b", "Buscando en los archivos del proyecto"),
+        (r"\bSemantic searching\b", "Búsqueda semántica en el proyecto"),
+        (r"\bSemantic search\b", "Búsqueda semántica"),
+        (r"\bDirectory analysis\b", "Análisis de la carpeta"),
+        (r"\bWeb search\b", "Búsqueda en la web"),
+        (r"\bFile edit\b", "Modificación del archivo"),
+        (r"\bCommand execution\b", "Ejecución de instrucción en consola"),
+        (r"\bTask status\b", "Estado de la tarea"),
+        (r"\bStatus check\b", "Revisión de estado"),
+        (r"\bListing directory contents\b", "Listando los archivos de la carpeta"),
+        (r"\bList directory contents\b", "Listar los archivos de la carpeta"),
+        (r"\bDirectory contents\b", "Contenido de la carpeta"),
+        (r"\bChecking git status\b", "Verificando el estado del repositorio"),
+        (r"\bGit status\b", "Estado del repositorio Git"),
+        (r"\bChecking python processes\b", "Verificando procesos de Python"),
+        (r"\bChecking command line\b", "Verificando la línea de comandos"),
+        (r"\bReviewing setup and config\b", "Revisando la configuración"),
+        (r"\bComparing file hashes\b", "Comparando integridad de archivos"),
+        (r"\bFile hash differences\b", "Diferencias entre archivos"),
+        (r"\bcompleted with exit code 0\b", "completado con éxito"),
+        (r"\bexited with code 0\b", "finalizado con éxito"),
+        (r"\buser denied permission\b", "permiso denegado por el usuario"),
+        (r"\bpermission denied\b", "permiso no concedido"),
+
+        # Gerundios y verbos en inglés
+        (r"\bViewing\b", "Leyendo"),
+        (r"\bReading\b", "Leyendo"),
+        (r"\bChecking\b", "Verificando"),
+        (r"\bInspecting\b", "Inspeccionando"),
+        (r"\bAnalyzing\b", "Analizando"),
+        (r"\bSearching\b", "Buscando"),
+        (r"\bEditing\b", "Modificando"),
+        (r"\bUpdating\b", "Actualizando"),
+        (r"\bWriting\b", "Guardando"),
+        (r"\bCreating\b", "Creando"),
+        (r"\bDeleting\b", "Eliminando"),
+        (r"\bComparing\b", "Comparando"),
+        (r"\bDiffing\b", "Comparando"),
+        (r"\bTesting\b", "Probando"),
+        (r"\bBuilding\b", "Compilando"),
+        (r"\bListing\b", "Listando"),
+        (r"\bRunning\b", "Ejecutando"),
+        (r"\bExecuting\b", "Ejecutando"),
+        (r"\bScanning\b", "Escaneando"),
+        (r"\bCleaning\b", "Limpiando"),
+        (r"\bConverting\b", "Convirtiendo"),
+        (r"\bOpening\b", "Abriendo"),
+        (r"\bClosing\b", "Cerrando"),
+        (r"\bNavigating to\b", "Navegando hacia"),
+        (r"\bNavigating\b", "Navegando en"),
+        (r"\bProcessing\b", "Procesando"),
+        (r"\bStyling\b", "Estilizando"),
+
+        # Sustantivos técnicos comunes
+        (r"\bfiles\b", "archivos"),
+        (r"\bfile\b", "archivo"),
+        (r"\blines\b", "líneas"),
+        (r"\bline\b", "línea"),
+        (r"\bdirectory\b", "carpeta"),
+        (r"\bfolder\b", "carpeta"),
+        (r"\bworkspace\b", "proyecto"),
+        (r"\bcontents\b", "contenido"),
+        (r"\bcontent\b", "contenido"),
+        (r"\bcode\b", "código"),
+        (r"\bcommand\b", "instrucción"),
+        (r"\bcommands\b", "instrucciones"),
+        (r"\bstatus\b", "estado"),
+        (r"\boutput\b", "resultado"),
+        (r"\binput\b", "entrada"),
+        (r"\bscript\b", "script"),
+        (r"\blogic\b", "lógica"),
+        (r"\bloop\b", "bucle"),
+        (r"\btranscript\b", "registro de eventos"),
+        (r"\btelemetry\b", "telemetría"),
+        (r"\bvoice\b", "voz"),
+        (r"\bspeech\b", "voz"),
+        (r"\bthe web\b", "la web"),
+        (r"\bweb\b", "web"),
+        (r"\bhashes\b", "firmas de integridad"),
+        (r"\bhash\b", "firma"),
+        (r"\bdifferences\b", "diferencias"),
+        (r"\bdifference\b", "diferencia"),
+        (r"\bdatabase\b", "base de datos"),
+        (r"\bprocesses\b", "procesos"),
+        (r"\bprocess\b", "proceso"),
+        (r"\bbranch\b", "rama"),
     ]
+
     res = texto
-    for eng, esp in reemplazos:
-        res = re.sub(re.escape(eng), esp, res)
+    for pat, esp in reemplazos:
+        res = re.sub(pat, esp, res, flags=re.IGNORECASE)
+    res = re.sub(r'\s{2,}', ' ', res).strip()
     return res
 
 def convertir_a_confirmacion(texto: str) -> str:
@@ -180,7 +178,7 @@ def convertir_a_confirmacion(texto: str) -> str:
         return "Señor Luis, ¿me confirma por favor la ejecución de este comando?"
     t = traducir_terminos_tecnicos(texto).strip().strip('"\'?.')
     t = re.sub(r'^(allow\s+|permitir\s+|¿permitir\s+)', '', t, flags=re.IGNORECASE).strip()
-    
+
     gerundios_a_infinitivo = [
         (r'^generando\b', 'generar'),
         (r'^ejecutando\b', 'ejecutar'),
@@ -202,6 +200,7 @@ def convertir_a_confirmacion(texto: str) -> str:
         (r'^listando\b', 'listar'),
         (r'^probando\b', 'probar'),
         (r'^guardando\b', 'guardar'),
+        (r'^comparando\b', 'comparar'),
     ]
     t_lower = t[0].lower() + t[1:] if len(t) > 1 else t.lower()
     for pattern, inf in gerundios_a_infinitivo:
@@ -217,78 +216,119 @@ def narrar_accion_coloquial(tool_name: str, tool_action: str, tool_summary: str,
     sum_txt = (tool_summary or "").strip().strip('"\'')
     raw_desc = args.get('Description', '').strip()
 
-    # Extraer nombre del archivo si aplica
+    # 1. Extracción y nombre amigable del archivo
     target_path = args.get('TargetFile') or args.get('AbsolutePath') or ''
     target_filename = os.path.basename(target_path) if target_path else ''
 
-    # 1. Petición de confirmación en comandos de consola (El IDE muestra 'Allow <accion>?')
+    nombres_amigables = {
+        "readme.md": "el archivo de documentación README",
+        "jarvis_voice.py": "el script de voz de Jarvis",
+        "iniciar_jarvis.bat": "el ejecutable de inicio de Jarvis",
+        "transcript.jsonl": "el registro de eventos en vivo",
+        "inventario_limpio.xlsx": "el archivo de inventario en Excel",
+        "inventario_refaccionaria.db": "la base de datos de refacciones",
+        "visor_n8n_canvas.html": "el visor interactivo de n8n",
+        "package.json": "el archivo de configuración de dependencias",
+        "requirements.txt": "el archivo de librerías de Python"
+    }
+
+    nombre_hablado = nombres_amigables.get(target_filename.lower(), f"el archivo {target_filename}" if target_filename else "")
+
+    # 2. Petición de confirmación en comandos de consola (run_command)
     if tool_name == "run_command":
+        cmd = args.get('CommandLine', '').strip()
+        cmd_lower = cmd.lower()
+        if "git push" in cmd_lower:
+            return "Señor Luis, ¿me confirma por favor para subir los cambios a GitHub?"
+        elif "git commit" in cmd_lower:
+            return "Señor Luis, ¿me confirma por favor para registrar los cambios en Git?"
+        elif any(k in cmd_lower for k in ["git status", "git diff", "git log"]):
+            return "Señor Luis, ¿me confirma por favor para verificar el estado del repositorio?"
+        elif "pip install" in cmd_lower or "npm install" in cmd_lower:
+            return "Señor Luis, ¿me confirma por favor para instalar las dependencias necesarias?"
+        elif "python" in cmd_lower:
+            match_py = re.search(r'python\s+([^\s]+\.py)', cmd)
+            if match_py:
+                py_name = os.path.basename(match_py.group(1))
+                return f"Señor Luis, ¿me confirma por favor para ejecutar {py_name}?"
+            return "Señor Luis, ¿me confirma por favor para ejecutar el script de Python?"
         if act:
             return convertir_a_confirmacion(act)
         elif sum_txt:
             return convertir_a_confirmacion(sum_txt)
-        cmd = args.get('CommandLine', '').strip()
-        if "pip" in cmd.lower() or "install" in cmd.lower():
-            return "Señor Luis, ¿me confirma por favor para instalar la paquetería necesaria?"
-        elif "git" in cmd.lower():
-            return "Señor Luis, ¿me confirma por favor para revisar el repositorio con Git?"
         return "Señor Luis, ¿me confirma por favor la ejecución de este comando en terminal?"
 
-    # 2. Consultas interactivas al usuario
+    # 3. Consultas interactivas al usuario (ask_question)
     if tool_name == "ask_question":
         return "Señor Luis, le he presentado una consulta en pantalla para conocer sus preferencias."
 
-    # 3. Edición y guardado de archivos
-    if tool_name in ["replace_file_content", "write_to_file", "multi_replace_file_content"]:
-        if raw_desc and len(raw_desc) > 8:
-            desc_limpia = raw_desc.rstrip('.')
-            return f"{desc_limpia}, Señor Luis."
-        elif target_filename:
-            return f"Actualizando el archivo {target_filename}, Señor Luis."
-        return "Aplicando cambios en el código, Señor Luis."
-
-    # 4. Lectura / consulta de archivos
+    # 4. Lectura / consulta de archivos e información (view_file)
     if tool_name == "view_file":
+        start_line = args.get('StartLine')
+        end_line = args.get('EndLine')
+
+        if nombre_hablado:
+            if start_line and end_line:
+                return f"Leyendo las líneas {start_line} a {end_line} de {nombre_hablado}, Señor Luis."
+            elif start_line:
+                return f"Leyendo desde la línea {start_line} de {nombre_hablado}, Señor Luis."
+            return f"Leyendo la información de {nombre_hablado}, Señor Luis."
+
         if act:
             act_trad = traducir_terminos_tecnicos(act)
             return f"{act_trad}, Señor Luis."
-        elif target_filename:
-            return f"Revisando el archivo {target_filename}, Señor Luis."
-        elif sum_txt:
-            base = traducir_terminos_tecnicos(sum_txt)
-            return f"{base}, Señor Luis."
-        return "Revisando el archivo correspondiente, Señor Luis."
+        return "Leyendo la información del archivo, Señor Luis."
 
-    # 4. Navegador web
+    # 5. Edición y guardado de archivos (replace_file_content, write_to_file, etc.)
+    if tool_name in ["replace_file_content", "write_to_file", "multi_replace_file_content"]:
+        # Si la descripción viene en español y es clara
+        if raw_desc and len(raw_desc) > 8 and not re.search(r'^[A-Z][a-z]+ing\b', raw_desc):
+            desc_limpia = raw_desc.rstrip('.')
+            desc_trad = traducir_terminos_tecnicos(desc_limpia)
+            return f"{desc_trad}, Señor Luis."
+        elif nombre_hablado:
+            return f"Actualizando {nombre_hablado}, Señor Luis."
+        return "Aplicando cambios en el proyecto, Señor Luis."
+
+    # 6. Lectura de URLs y páginas web
+    if tool_name in ["read_url_content", "read_browser_page"]:
+        url = args.get('Url') or ''
+        if url:
+            dominio = re.sub(r'https?://(www\.)?', '', url).split('/')[0]
+            return f"Leyendo la información de {dominio}, Señor Luis."
+        return "Leyendo la información de la página web, Señor Luis."
+
+    # 7. Navegador web automatizado (browser_subagent)
     if tool_name == "browser_subagent":
         task_sum = args.get('TaskSummary', '') or sum_txt
         if task_sum:
             task_trad = traducir_terminos_tecnicos(task_sum)
             return f"{task_trad}, Señor Luis."
-        return "Navegando en el navegador web, Señor Luis."
+        return "Navegando en la web para consultar la información, Señor Luis."
 
-    # 5. Búsqueda de código
+    # 8. Búsqueda de código y texto
     if tool_name in ["grep_search", "search_web"]:
         q = args.get('Query') or args.get('query') or ''
         if q:
-            return f"Buscando coincidencias de '{q}', Señor Luis."
-        return "Buscando referencias en el proyecto, Señor Luis."
+            q_clean = q.strip('"\'')
+            if tool_name == "search_web":
+                return f"Buscando en la web sobre '{q_clean}', Señor Luis."
+            return f"Buscando '{q_clean}' en los archivos del proyecto, Señor Luis."
+        return "Buscando la información en el proyecto, Señor Luis."
 
-    # 6. Listado de carpetas
+    # 9. Listado de carpetas
     if tool_name == "list_dir":
         dp = args.get('DirectoryPath', '')
         dir_name = os.path.basename(dp) if dp else "el proyecto"
-        return f"Listando los archivos de {dir_name}, Señor Luis."
+        return f"Listando los archivos de la carpeta {dir_name}, Señor Luis."
 
-    # 7. Fallback dinámico con traducción
-    if act:
-        frase = traducir_terminos_tecnicos(act)
-        return f"{frase}, Señor Luis."
-    elif sum_txt:
-        frase = traducir_terminos_tecnicos(sum_txt)
+    # 10. Fallback dinámico con traducción robusta
+    frase_candidata = act or sum_txt
+    if frase_candidata:
+        frase = traducir_terminos_tecnicos(frase_candidata)
         return f"{frase}, Señor Luis."
 
-    return "Trabajando en la tarea en este momento, Señor Luis."
+    return "Procesando la información en este momento, Señor Luis."
 
 async def generate_speech(text: str, output_path: str):
     communicate = edge_tts.Communicate(text, VOICE)
@@ -449,53 +489,50 @@ def play_voice(voice_file: str, is_muted_ref, music: MusicManager):
 def main():
     os.system('cls' if os.name == 'nt' else 'clear')
     print("=" * 68)
-    print(" 🤖 SISTEMA JARVIS - MÓDULO DE VOZ Y MÚSICA DE CONCENTRACIÓN")
+    print(" 🤖 JARVIS TELEMETRÍA DE VOZ EN TIEMPO REAL - ANTIGRAVITY IDE")
     print("=" * 68)
-    print(" Controles rápidos por teclado:")
-    print("  [1] -> Fijar música al 100%     [5] -> Fijar música al 50%")
-    print("  [P] -> Pausar / Reanudar música [T] -> Cambiar pista (Synthwave / LoFi)")
-    print("  [M] -> Silenciar / Activar voz  [S] -> Saltar respuesta actual")
-    print("  [Q] -> Salir completamente")
+    print(" [S]: Saltar / Callar voz actual   |  [M]: Mutear / Desmutear voz")
+    print(" [1]: Música al 100%               |  [5]: Música al 50%")
+    print(" [P]: Pausar / Reanudar música    |  [T]: Cambiar pista musical")
+    print("=" * 68)
+    print("💬 Comandos de chat disponibles: 'subele', 'bajale', '100%', '50%',")
+    print("   'pausa', 'lofi', 'synthwave', 'cyber', 'ambient', 'otra musica'.")
     print("=" * 68)
 
-    pygame.mixer.init(frequency=44100)
+    # Inicializar Pygame con 2 canales (Música + Voz)
+    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
     music = MusicManager()
-    music.start()  # Comienza a sonar la música de concentración
-    print(f"🎵 Música de enfoque iniciada: {music.current_track_name.upper()} al 50% de volumen.")
+    music.start()
+    print("🎵 [JARVIS]: Música de concentración activa de fondo (Synthwave Lab 50%).\n")
 
-    transcript_file = get_latest_transcript()
-    if not transcript_file:
-        print("❌ No se encontró archivo de conversación activo.")
-        return
-
-    print("📡 Conectado al entorno del señor Luis. Listo para trabajar.\n")
-
+    audio_file = os.path.join(tempfile.gettempdir(), "jarvis_voice_temp.mp3")
     processed_steps = set()
-    try:
-        with open(transcript_file, 'r', encoding='utf-8') as f:
-            for line in f:
-                try:
-                    data = json.loads(line)
-                    if data.get('step_index') is not None:
-                        processed_steps.add(data.get('step_index'))
-                except Exception:
-                    pass
-    except Exception:
-        pass
-
+    transcript_file = get_latest_transcript()
     is_muted = [False]
-    temp_dir = tempfile.gettempdir()
-    audio_file = os.path.join(temp_dir, "jarvis_temp_reply.mp3")
-    last_tool_narration_time = 0.0
+    last_tool_narration_time = 0
+
+    if transcript_file:
+        print(f"📡 Sesión vinculada: {os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(transcript_file))))}")
+        try:
+            with open(transcript_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    try:
+                        item = json.loads(line)
+                        processed_steps.add(item.get('step_index'))
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+
+    saludo = "Sistemas en línea, Señor Luis. Telemetría de voz activa y música de concentración sincronizada."
+    asyncio.run(generate_speech(saludo, audio_file))
+    play_voice(audio_file, is_muted, music)
 
     while True:
         try:
             if msvcrt.kbhit():
                 key = msvcrt.getch().decode('utf-8', errors='ignore').lower()
-                if key == 'q':
-                    print("\n👋 Apagando sistemas. ¡Excelente jornada, señor Luis!")
-                    break
-                elif key == '1':
+                if key == '1':
                     music.set_volume(1.0)
                     print("\n🎚️ [JARVIS]: Música al 100%.")
                 elif key == '5':
@@ -527,7 +564,7 @@ def main():
                             status = item.get('status')
                             content = item.get('content')
 
-                            # Escuchar comandos del usuario desde el chat
+                            # 1. Escuchar comandos del usuario desde el chat
                             if item_type == 'USER_INPUT' and content and step_idx not in processed_steps:
                                 processed_steps.add(step_idx)
                                 detect_chat_commands(content, music)
